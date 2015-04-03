@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
@@ -11,208 +12,204 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <meta charset="utf-8">
+      <style>
+        .axis path,
+        .axis line {
+          fill: none;
+          stroke: #000;
+          shape-rendering: crispEdges;
+        }
 
-<meta charset="utf-8">
-<style>
+        .dot {
+          stroke: none;
+          fill: rgba(92, 158, 248, 0.8)
+        }
 
-body {
-  font: 10px sans-serif;
-}
+        .seg {
+          stroke: darkgrey;
+        }
 
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
+        .time{
+          font-size: 1.5em;
+        }
 
-.dot {
-  stroke: none;
-  fill: rgba(92, 158, 248, 0.8)
-}
+      </style>
 
-.seg {
-  stroke: darkgrey;
-}
+    </meta>
 
-.time{
-  font-size: 1.5em;
-}
-
-</style>
-
-</meta>
 </head>
+
 <body>
   <div class="wrapper">
     <header>
       <h1>Root Reporter Vizualizer</h1>
-      <p>Growth and Luminescence Observatory for Roots (GLO-Roots)</p>
+      <p>Visualisation of GLO-Root results. </p>
 
-      <p class="view"><a href="https://github.com/rr-lab/glo_roots">View the Project on GitHub <small>rr-lab/glo_roots</small></a></p>
+      <p class="view"><a href="https://github.com/guillaumelobet/rootreporter_d3">View the Project on GitHub <small>guillaumelobet/rootreporter_d3</small></a></p>
 
 
       <ul>
-        <li><a href="https://github.com/rr-lab/glo_roots/zipball/master">Download <strong>ZIP File</strong></a></li>
-        <li><a href="https://github.com/rr-lab/glo_roots/tarball/master">Download <strong>TAR Ball</strong></a></li>
-        <li><a href="https://github.com/rr-lab/glo_roots">View On <strong>GitHub</strong></a></li>
+        <li><a href="https://github.com/guillaumelobet/rootreporter_d3/zipball/master">Download <strong>ZIP File</strong></a></li>
+        <li><a href="https://github.com/guillaumelobet/rootreporter_d3/tarball/master">Download <strong>TAR Ball</strong></a></li>
+        <li><a href="https://github.com/guillaumelobet/rootreporter_d3">View On <strong>GitHub</strong></a></li>
       </ul>
     </header>
 
-  </div>
     <section>
 
+      <p class="time">
+        <label for="nTime"
+              style="display: inline-block; width: 240px; text-align: right">
+              Time in serie: <span id="nTime-value"></span>
+           </label>
+        <input type="range" min="1" max="5" id="nTime" value="1">
+      </p>
+
+      <script src="http://d3js.org/d3.v3.min.js"></script>
+      <script>
+
+        var margin = {top: 60, right: 20, bottom: 30, left: 40},
+            width = 500 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        var x = d3.scale.linear()
+            .range([0, width]);
+
+        var y = d3.scale.linear()
+            .range([height, 0]);
+
+        var rad = d3.scale.linear()
+            .range([0, 5]);
+
+        var color = d3.scale.category10();
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+        var svg = d3.select("section").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var scale = 138.6;
+
+        d3.csv("segs.csv", function(error, data) {
+
+            svg.selectAll(".seg")
+                .data(data)
+                .enter().append("line")
+                .filter(function(d) { return d.time_in_serie == 1 })
+                .attr("class", "seg")
+                .attr("x1", function(d) { return x(d.startx / scale); })
+                .attr("y1", function(d) { return y(-d.starty / scale); })
+                .attr("x2", function(d) { return x(d.endx / scale); })
+                .attr("y2", function(d) { return y(-d.endy / scale); });
+        });
 
 
-  <p class="time">
-    <label for="nTime"
-           style="display: inline-block; width: 240px; text-align: right">
-           Time in serie: <span id="nTime-value"></span>
-    </label>
-    <input type="range" min="1" max="5" id="nTime" value="1">
-  </p>
-
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script>
-
-var margin = {top: 60, right: 20, bottom: 30, left: 540},
-    width = 500 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
-
-var x = d3.scale.linear()
-    .range([0, width]);
-
-var y = d3.scale.linear()
-    .range([height, 0]);
-
-var rad = d3.scale.linear()
-    .range([0, 5]);
-
-var color = d3.scale.category10();
-
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
-
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left");
-
-var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-var scale = 138.6;
-
-d3.csv("segs.csv", function(error, data) {
-
-    svg.selectAll(".seg")
-        .data(data)
-        .enter().append("line")
-        .filter(function(d) { return d.time_in_serie == 1 })
-        .attr("class", "seg")
-        .attr("x1", function(d) { return x(d.startx / scale); })
-        .attr("y1", function(d) { return y(-d.starty / scale); })
-        .attr("x2", function(d) { return x(d.endx / scale); })
-        .attr("y2", function(d) { return y(-d.endy / scale); });
-});
+        d3.select("#nTime").on("input", function() {
+            update(+this.value);
+        });
 
 
-d3.select("#nTime").on("input", function() {
-    update(+this.value);
-});
+        d3.csv("reporters.csv", function(error, data) {
 
+            x.domain(d3.extent(data, function(d) { return d.repx / scale; })).nice();
+            y.domain(d3.extent(data, function(d) { return -d.repy / scale; })).nice();
 
-d3.csv("reporters.csv", function(error, data) {
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+              .append("text")
+                .attr("class", "label")
+                .attr("x", width)
+                .attr("y", -6)
+                .style("text-anchor", "end")
+                .text("Width (cm)");
 
-    x.domain(d3.extent(data, function(d) { return d.repx / scale; })).nice();
-    y.domain(d3.extent(data, function(d) { return -d.repy / scale; })).nice();
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+              .append("text")
+                .attr("class", "label")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text("Depth (cm)")
 
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis)
-      .append("text")
-        .attr("class", "label")
-        .attr("x", width)
-        .attr("y", -6)
-        .style("text-anchor", "end")
-        .text("Width (cm)");
+            svg.selectAll(".dot")
+                .data(data)
+                .enter().append("circle")
+                .filter(function(d) { return d.time_in_serie == 1 })
+                .attr("class", "dot")
+                .attr("r", function(d) { return rad(d.intensity / 10); })
+                .attr("cx", function(d) { return x(d.repx / scale); })
+                .attr("cy", function(d) { return y(-d.repy / scale); })
+                .attr("fill", function(d) { return color(d.time_in_serie); });
 
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-      .append("text")
-        .attr("class", "label")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .text("Depth (cm)")
+        });
 
-    svg.selectAll(".dot")
-        .data(data)
-        .enter().append("circle")
-        .filter(function(d) { return d.time_in_serie == 1 })
-        .attr("class", "dot")
-        .attr("r", function(d) { return rad(d.intensity / 10); })
-        .attr("cx", function(d) { return x(d.repx / scale); })
-        .attr("cy", function(d) { return y(-d.repy / scale); })
-        .attr("fill", function(d) { return color(d.time_in_serie); });
+        function update(nTime) {
 
-});
+          // adjust the text on the range slider
+          d3.select("#nTime-value").text(nTime);
+          d3.select("#nTime").property("value", nTime);
 
-function update(nTime) {
+          d3.csv("reporters.csv", function(error, data) {
 
-  // adjust the text on the range slider
-  d3.select("#nTime-value").text(nTime);
-  d3.select("#nTime").property("value", nTime);
+            x.domain(d3.extent(data, function(d) { return d.repx / scale; })).nice();
+            y.domain(d3.extent(data, function(d) { return -d.repy / scale; })).nice();
 
-  d3.csv("reporters.csv", function(error, data) {
+            svg.selectAll(".dot")
+                .remove("circle")
 
-    x.domain(d3.extent(data, function(d) { return d.repx / scale; })).nice();
-    y.domain(d3.extent(data, function(d) { return -d.repy / scale; })).nice();
+            svg.selectAll(".dot")
+                .data(data)
+                .enter().append("circle")
+                .filter(function(d) { return d.time_in_serie == nTime })
+                .attr("class", "dot")
+                .attr("r", function(d) { return rad(d.intensity / 10); })
+                .attr("cx", function(d) { return x(d.repx / scale); })
+                .attr("cy", function(d) { return y(-d.repy / scale); })
+                .attr("fill", function(d) { return color(d.time_in_serie); });
+          });
 
-    svg.selectAll(".dot")
-        .remove("circle")
+          d3.csv("segs.csv", function(error, data) {
 
-    svg.selectAll(".dot")
-        .data(data)
-        .enter().append("circle")
-        .filter(function(d) { return d.time_in_serie == nTime })
-        .attr("class", "dot")
-        .attr("r", function(d) { return rad(d.intensity / 10); })
-        .attr("cx", function(d) { return x(d.repx / scale); })
-        .attr("cy", function(d) { return y(-d.repy / scale); })
-        .attr("fill", function(d) { return color(d.time_in_serie); });
-  });
+              svg.selectAll(".seg")
+                  .remove("line")
 
-  d3.csv("segs.csv", function(error, data) {
+              svg.selectAll(".seg")
+                  .data(data)
+                  .enter().append("line")
+                  .filter(function(d) { return d.time_in_serie == nTime })
+                  .attr("class", "seg")
+                  .attr("x1", function(d) { return x(d.startx / scale); })
+                  .attr("y1", function(d) { return y(-d.starty / scale); })
+                  .attr("x2", function(d) { return x(d.endx / scale); })
+                  .attr("y2", function(d) { return y(-d.endy / scale); });
+          });
+        }
 
-      svg.selectAll(".seg")
-          .remove("line")
+      </script>
 
-      svg.selectAll(".seg")
-          .data(data)
-          .enter().append("line")
-          .filter(function(d) { return d.time_in_serie == nTime })
-          .attr("class", "seg")
-          .attr("x1", function(d) { return x(d.startx / scale); })
-          .attr("y1", function(d) { return y(-d.starty / scale); })
-          .attr("x2", function(d) { return x(d.endx / scale); })
-          .attr("y2", function(d) { return y(-d.endy / scale); });
-  });
-}
+    </section>
 
-</script>
+  </div>
 
-</section>
-<footer>
-  <p>This project is maintained by <a href="https://github.com/rr-lab">rr-lab</a></p>
-  <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-</footer>
+  <footer>
+    <p>This project is maintained by <a href="https://github.com/rr-lab">rr-lab</a></p>
+    <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+  </footer>
 
 </body>
 </html>
