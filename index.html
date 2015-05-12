@@ -164,8 +164,8 @@
         gravity: 'w', 
         html: true, 
         title: function() {
-          var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = d.diameter/scale, c4 = d.growth/scale;
-          return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + '</br><b>Growth:</b> ' + c4; 
+          var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = (Math.round((d.diameter/scale)*100))/100, c4 = (Math.round((d.growth/scale)*100))/100;
+          return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h'; 
         }
       });  
 
@@ -199,8 +199,8 @@
         gravity: 'w', 
         html: true, 
         title: function() {
-          var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = d.diameter/scale, c4 = d.growth/scale;
-          return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + '</br><b>Growth:</b> ' + c4; 
+          var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = (Math.round((d.diameter/scale)*100))/100, c4 = (Math.round((d.growth/scale)*100))/100;
+          return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h'; 
         }
       });  
           });
