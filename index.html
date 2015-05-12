@@ -164,7 +164,7 @@
         gravity: 'w', 
         html: true, 
         title: function() {
-          var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = d.diameter, c4 = d.growth;
+          var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = d.diameter/scale, c4 = d.growth/scale;
           return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + '</br><b>Growth:</b> ' + c4; 
         }
       });  
@@ -199,7 +199,7 @@
         gravity: 'w', 
         html: true, 
         title: function() {
-          var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = d.diameter, c4 = d.growth;
+          var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = d.diameter/scale, c4 = d.growth/scale;
           return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + '</br><b>Growth:</b> ' + c4; 
         }
       });  
