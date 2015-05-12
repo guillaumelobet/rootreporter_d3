@@ -66,7 +66,11 @@
         <input type="range" min="1" max="5" id="nTime" value="1">
       </p>
 
+
       <script src="http://d3js.org/d3.v3.min.js"></script>
+      <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script> 
+      <script type="text/javascript" src="jquery.tipsy.js"></script>
+      <link href="tipsy.css" rel="stylesheet" type="text/css" />
       <script>
 
         var margin = {top: 60, right: 40, bottom: 20, left: 40},
@@ -146,15 +150,24 @@
                 .style("text-anchor", "end")
                 .text("Depth (cm)")
 
-            svg.selectAll(".dot")
-                .data(data)
-                .enter().append("circle")
-                .filter(function(d) { return d.time_in_serie == 1 })
-                .attr("class", "dot")
-                .attr("r", function(d) { return rad(d.intensity / 10); })
-                .attr("cx", function(d) { return x(d.repx / scale); })
-                .attr("cy", function(d) { return y(-d.repy / scale); })
-                .attr("fill", function(d) { return color(d.time_in_serie); });
+    svg.selectAll("circle")
+        .data(data)
+        .enter().append("svg:circle")
+        .filter(function(d) { return d.time_in_serie == 1 })
+        .attr("class", "dot")
+        .attr("r", function(d) { return rad(d.intensity / 10); })
+        .attr("cx", function(d) { return x(d.repx / scale); })
+        .attr("cy", function(d) { return y(-d.repy / scale); })
+        .attr("fill", function(d) { return color(d.time_in_serie); });
+
+  $('circle').tipsy({ 
+        gravity: 'w', 
+        html: true, 
+        title: function() {
+          var d = this.__data__, c = d.intensity;
+          return 'Intensity: ' + c;  
+        }
+      });  
 
         });
 
@@ -169,18 +182,27 @@
             x.domain(d3.extent(data, function(d) { return d.repx / scale; })).nice();
             y.domain(d3.extent(data, function(d) { return -d.repy / scale; })).nice();
 
-            svg.selectAll(".dot")
+            svg.selectAll("circle")
                 .remove("circle")
 
-            svg.selectAll(".dot")
-                .data(data)
-                .enter().append("circle")
-                .filter(function(d) { return d.time_in_serie == nTime })
-                .attr("class", "dot")
-                .attr("r", function(d) { return rad(d.intensity / 10); })
-                .attr("cx", function(d) { return x(d.repx / scale); })
-                .attr("cy", function(d) { return y(-d.repy / scale); })
-                .attr("fill", function(d) { return color(d.time_in_serie); });
+    svg.selectAll("circle")
+        .data(data)
+        .enter().append("svg:circle")
+        .filter(function(d) { return d.time_in_serie == nTime })
+        .attr("class", "dot")
+        .attr("r", function(d) { return rad(d.intensity / 10); })
+        .attr("cx", function(d) { return x(d.repx / scale); })
+        .attr("cy", function(d) { return y(-d.repy / scale); })
+        .attr("fill", function(d) { return color(d.time_in_serie); });
+
+  $('circle').tipsy({ 
+        gravity: 'w', 
+        html: true, 
+        title: function() {
+          var d = this.__data__, c = d.intensity;
+          return 'Intensity: ' + c;  
+        }
+      });  
           });
 
           d3.csv("segs.csv", function(error, data) {
