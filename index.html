@@ -6,12 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Root Reporter for GLO-Root</title>
 
-
-    <link href="tipsy.css" rel="stylesheet" type="text/css" />
-
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+      <script src="http://d3js.org/d3.v3.min.js"></script>
+      <!--script type="text/javascript" src="d3.v3.min.js"></script-->
+      <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script> 
+      <!--script type="text/javascript" src="jquery-1.6.2.min.js"></script--> 
+      <script type="text/javascript" src="jquery.tipsy.js"></script>
+      <link href="tipsy.css" rel="stylesheet" type="text/css" />
 
     <meta charset="utf-8">
       <style>
@@ -24,13 +27,8 @@
 
         .dot {
           stroke: none;
-          fill: rgba(92, 158, 248, 0.8)
+          opacity: 0.7
         }
-
-        .dot1 {
-          stroke: none;
-          opacity: 0.7;
-        }        
 
         .seg {
           stroke: darkgrey;
@@ -64,9 +62,7 @@
       </ul>
     </header>
 
-    <section id="plot1">
-
-
+    <section>
 
       <p class="time">
         <label for="nTime"
@@ -75,9 +71,8 @@
            </label>
         <input type="range" min="1" max="5" id="nTime" value="1">
       </p>
-    <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script> 
-    <script type="text/javascript" src="jquery.tipsy.js"></script>      
+
+
 
       <script>
 
@@ -116,7 +111,7 @@
         });
 
 
-        d3.csv("humidity.csv", function(error, data) {
+        d3.csv("reporters_1.csv", function(error, data) {
 
             x.domain(d3.extent(data, function(d) { return d.environment; })).nice();
             y.domain(d3.extent(data, function(d) { return d.scale; })).nice();
@@ -147,7 +142,7 @@
                 .data(data)
                 .enter().append("svg:circle")
                 .filter(function(d) { return d.time_in_serie == 1 })
-                .attr("class", "dot1")
+                .attr("class", "dot")
                 .attr("r", function(d) { return rad(1); })
                 .attr("cx", function(d) { return x(d.environment); })
                 .attr("cy", function(d) { return y(d.direction); })
@@ -181,7 +176,7 @@
                 .data(data)
                 .enter().append("svg:circle")
                 .filter(function(d) { return d.time_in_serie == nTime })
-                .attr("class", "dot1")
+                .attr("class", "dot")
                 .attr("r", function(d) { return rad(1); })
                 .attr("cx", function(d) { return x(d.environment); })
                 .attr("cy", function(d) { return y(d.direction); })
@@ -204,183 +199,7 @@
     <section>
 
       <p>Time series showing the relationship between local soil moisture content and root growth direction. Orange dots: Water Deficit. Blue dots: Well Watered. Data coming from the figure 8 of the pre-print available in <a href="http://biorxiv.org/content/early/2015/03/30/016931">BioRxiv</a></p>
-    </section>
-
-
-
-
-    <!--section id="plot2">
-
-      <p class="time1">
-        <label for="nTime1"
-              style="display: inline-block; width: 240px; text-align: right">
-              Time in serie: <span id="nTime1-value">1</span>
-           </label>
-        <input type="range" min="1" max="5" id="nTime1" value="1">
-      </p>
-
-      <script>
-
-        var margin = {top: 60, right: 40, bottom: 20, left: 40},
-            width = 500 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
-
-        var x = d3.scale.linear()
-            .range([0, width]);
-
-        var y = d3.scale.linear()
-            .range([height, 0]);
-
-        var rad = d3.scale.linear()
-            .range([0, 5]);
-
-        var color = d3.scale.category10();
-
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
-
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left");
-
-        var svg = d3.select("#plot2").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        var scale = 138.6;
-
-        d3.csv("segs.csv", function(error, data) {
-
-            svg.selectAll(".seg")
-                .data(data)
-                .enter().append("line")
-                .filter(function(d) { return d.time_in_serie == 1 })
-                .attr("class", "seg")
-                .attr("x1", function(d) { return x(d.startx / scale); })
-                .attr("y1", function(d) { return y(-d.starty / scale); })
-                .attr("x2", function(d) { return x(d.endx / scale); })
-                .attr("y2", function(d) { return y(-d.endy / scale); });
-        });
-
-
-        d3.select("#nTime1").on("input", function() {
-            update(+this.value);
-        });
-
-
-        d3.csv("reporters.csv", function(error, data) {
-
-            x.domain(d3.extent(data, function(d) { return d.rep_x / scale; })).nice();
-            y.domain(d3.extent(data, function(d) { return -d.rep_y / scale; })).nice();
-
-            svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis)
-              .append("text")
-                .attr("class", "label")
-                .attr("x", width)
-                .attr("y", -6)
-                .style("text-anchor", "end")
-                .text("Width (cm)");
-
-            svg.append("g")
-                .attr("class", "y axis")
-                .call(yAxis)
-              .append("text")
-                .attr("class", "label")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .style("text-anchor", "end")
-                .text("Depth (cm)")
-
-    svg.selectAll("circle")
-        .data(data)
-        .enter().append("svg:circle")
-        .filter(function(d) { return d.time_in_serie == 1 })
-        .attr("class", "dot")
-        .attr("r", function(d) { return rad(d.intensity / 10); })
-        .attr("cx", function(d) { return x(d.rep_x / scale); })
-        .attr("cy", function(d) { return y(-d.rep_y / scale); })
-        .attr("fill", function(d) { return color(d.time_in_serie); });
-
-  $('circle').tipsy({ 
-        gravity: 'w', 
-        html: true, 
-        title: function() {
-          var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = (Math.round((d.diameter/scale)*100))/100, c4 = (Math.round((d.growth/scale)*100))/100;
-          return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h'; 
-        }
-      });  
-
-        });
-
-        function update(nTime) {
-
-          // adjust the text on the range slider
-          d3.select("#nTime1-value").text(nTime1);
-          d3.select("#nTime1").property("value", nTime1);
-
-          d3.csv("reporters.csv", function(error, data) {
-
-            x.domain(d3.extent(data, function(d) { return d.rep_x / scale; })).nice();
-            y.domain(d3.extent(data, function(d) { return -d.rep_y / scale; })).nice();
-
-            svg.selectAll("circle")
-                .remove("circle")
-
-    svg.selectAll("circle")
-        .data(data)
-        .enter().append("svg:circle")
-        .filter(function(d) { return d.time_in_serie == nTime1 })
-        .attr("class", "dot")
-        .attr("r", function(d) { return rad(d.intensity / 10); })
-        .attr("cx", function(d) { return x(d.rep_x / scale); })
-        .attr("cy", function(d) { return y(-d.rep_y / scale); })
-        .attr("fill", function(d) { return color(d.time_in_serie); });
-
-  $('circle').tipsy({ 
-        gravity: 'w', 
-        html: true, 
-        title: function() {
-          var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = (Math.round((d.diameter/scale)*100))/100, c4 = (Math.round((d.growth/scale)*100))/100;
-          return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h'; 
-        }
-      });  
-          });
-
-          d3.csv("segs.csv", function(error, data) {
-
-              svg.selectAll(".seg")
-                  .remove("line")
-
-              svg.selectAll(".seg")
-                  .data(data)
-                  .enter().append("line")
-                  .filter(function(d) { return d.time_in_serie == nTime })
-                  .attr("class", "seg")
-                  .attr("x1", function(d) { return x(d.startx / scale); })
-                  .attr("y1", function(d) { return y(-d.starty / scale); })
-                  .attr("x2", function(d) { return x(d.endx / scale); })
-                  .attr("y2", function(d) { return y(-d.endy / scale); });
-          });
-        }
-
-      </script>
-
-    </section>
-    <section>
-
-      <p>Time series showing root growth and ProZAT12:LUC expression after salt addition to the right side of the root system. Data coming from the figure 7 of the pre-print available in <a href="http://biorxiv.org/content/early/2015/03/30/016931">BioRxiv</a></p>
-      
-          </section-->
-    <section>
-
-      <hr>      
+      <hr>
       <h2>
       <a id="multidimensional-mapping-of-root-responses-to-environmental-cues-using-a-luminescence-based-imaging-system" class="anchor" href="#multidimensional-mapping-of-root-responses-to-environmental-cues-using-a-luminescence-based-imaging-system" aria-hidden="true"><span class="octicon octicon-link"></span></a>Multidimensional mapping of root responses to environmental cues using a luminescence-based imaging system</h2>
 
