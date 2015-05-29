@@ -24,14 +24,8 @@
           stroke: #000;
           shape-rendering: crispEdges;
         }
-
-        .dot {
-          stroke: none;
-          opacity: 0.7
-        }
-
         .seg {
-          stroke: darkgrey;
+            opacity: 0.7
         }
 
         .time{
@@ -62,17 +56,15 @@
       </ul>
     </header>
 
-    <section>
+   <section>
 
       <p class="time">
         <label for="nTime"
               style="display: inline-block; width: 240px; text-align: right">
               Time in serie: <span id="nTime-value">1</span>
            </label>
-        <input type="range" min="1" max="5" id="nTime" value="1">
+        <input type="range" min="1" max="10" id="nTime" value="1">
       </p>
-
-
 
       <script>
 
@@ -105,16 +97,13 @@
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
-        d3.select("#nTime").on("input", function() {
-            update(+this.value);
-        });
-
+        var scale = 138.6;
 
         d3.csv("humidity.csv", function(error, data) {
 
-            x.domain(d3.extent(data, function(d) { return d.environment; })).nice();
-            y.domain(d3.extent(data, function(d) { return d.scale; })).nice();
+
+            x.domain(d3.extent(data, function(d) { return d.startx / scale; })).nice();
+            y.domain(d3.extent(data, function(d) { return -d.starty / scale; })).nice();
 
             svg.append("g")
                 .attr("class", "x axis")
@@ -125,7 +114,7 @@
                 .attr("x", width)
                 .attr("y", -6)
                 .style("text-anchor", "end")
-                .text("Water content (%)");
+                .text("Width (cm)");
 
             svg.append("g")
                 .attr("class", "y axis")
@@ -136,28 +125,26 @@
                 .attr("y", 6)
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
-                .text("Root direction (°)")
+                .text("Depth (cm)")
 
-            svg.selectAll("circle")
+            svg.selectAll(".seg")
                 .data(data)
-                .enter().append("svg:circle")
+                .enter().append("line")
                 .filter(function(d) { return d.time_in_serie == 1 })
-                .attr("class", "dot")
-                .attr("r", function(d) { return rad(1); })
-                .attr("cx", function(d) { return x(d.environment); })
-                .attr("cy", function(d) { return y(d.direction); })
-                .attr("fill", function(d) { return color(d.group); });
-
-            $('circle').tipsy({ 
-                  gravity: 'w', 
-                  html: true, 
-                  title: function() {
-                    var d = this.__data__, c1 = d.environment, c2 = d.direction;
-                    return '<b>Water content:</b> ' + c1 + '</br><b>Direction:</b> ' + c2 + '<b>'; 
-                  }
-                });  
-
+                .attr("class", "seg")
+                .attr("x1", function(d) { return x(d.startx / scale); })
+                .attr("y1", function(d) { return y(-d.starty / scale); })
+                .attr("x2", function(d) { return x(d.endx / scale); })
+                .attr("y2", function(d) { return y(-d.endy / scale); })
+                .attr("stroke", function(d) { return color(d.group); })
+                .attr("stroke-width", function(d) { return 2; });
         });
+
+
+        d3.select("#nTime").on("input", function() {
+            update(+this.value);
+        });
+
 
         function update(nTime) {
 
@@ -166,39 +153,31 @@
           d3.select("#nTime").property("value", nTime);
 
           d3.csv("humidity.csv", function(error, data) {
-            x.domain(d3.extent(data, function(d) { return d.environment; })).nice();
-            y.domain(d3.extent(data, function(d) { return d.scale; })).nice();
 
-            svg.selectAll("circle")
-                .remove("circle")
+              svg.selectAll(".seg")
+                  .remove("line")
 
-            svg.selectAll("circle")
-                .data(data)
-                .enter().append("svg:circle")
-                .filter(function(d) { return d.time_in_serie == nTime })
-                .attr("class", "dot")
-                .attr("r", function(d) { return rad(1); })
-                .attr("cx", function(d) { return x(d.environment); })
-                .attr("cy", function(d) { return y(d.direction); })
-                .attr("fill", function(d) { return color(d.group); });
-
-            $('circle').tipsy({ 
-                  gravity: 'w', 
-                  html: true, 
-                  title: function() {
-                    var d = this.__data__, c1 = d.environment, c2 = d.direction;
-                    return '<b>Water content:</b> ' + c1 + '</br><b>Direction:</b> ' + c2 + '<b>'; 
-                  }
-                });  
+              svg.selectAll(".seg")
+                  .data(data)
+                  .enter().append("line")
+                  .filter(function(d) { return d.time_in_serie == nTime })
+                  .attr("class", "seg")
+                  .attr("x1", function(d) { return x(d.startx / scale); })
+                  .attr("y1", function(d) { return y(-d.starty / scale); })
+                  .attr("x2", function(d) { return x(d.endx / scale); })
+                  .attr("y2", function(d) { return y(-d.endy / scale); })
+                  .attr("stroke", function(d) { return color(d.group); })
+                  .attr("stroke-width", function(d) { return 2; });
           });
         }
 
       </script>
 
     </section>
+
     <section>
 
-      <p>Time series showing the relationship between local soil moisture content and root growth direction. Orange dots: Water Deficit. Blue dots: Well Watered. Data coming from the figure 8 of the pre-print available in <a href="http://biorxiv.org/content/early/2015/03/30/016931">BioRxiv</a></p>
+      <p>Time series showing the relationship between local soil moisture content and root growth direction. Orange lines: water deficit. Blue lines: Well Watered. Data coming from the figure 8 of the pre-print available in <a href="http://biorxiv.org/content/early/2015/03/30/016931">BioRxiv</a></p>
       <hr>
       <h2>
       <a id="multidimensional-mapping-of-root-responses-to-environmental-cues-using-a-luminescence-based-imaging-system" class="anchor" href="#multidimensional-mapping-of-root-responses-to-environmental-cues-using-a-luminescence-based-imaging-system" aria-hidden="true"><span class="octicon octicon-link"></span></a>Multidimensional mapping of root responses to environmental cues using a luminescence-based imaging system</h2>
