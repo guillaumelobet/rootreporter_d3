@@ -29,6 +29,11 @@
           fill: rgba(92, 158, 248, 0.8)
         }
 
+        .dot1 {
+          stroke: none;
+          opacity: 0.7;
+        }        
+
         .seg {
           stroke: darkgrey;
         }
@@ -61,7 +66,7 @@
       </ul>
     </header>
 
-    <section>
+    <section id="plot1">
 
 
 
@@ -100,7 +105,7 @@
             .scale(y)
             .orient("left");
 
-        var svg = d3.select("section").append("svg")
+        var svg = d3.select("#plot1").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -143,7 +148,7 @@
                 .data(data)
                 .enter().append("svg:circle")
                 .filter(function(d) { return d.time_in_serie == 1 })
-                .attr("class", "dot")
+                .attr("class", "dot1")
                 .attr("r", function(d) { return rad(1); })
                 .attr("cx", function(d) { return x(d.environment); })
                 .attr("cy", function(d) { return y(d.direction); })
@@ -177,7 +182,7 @@
                 .data(data)
                 .enter().append("svg:circle")
                 .filter(function(d) { return d.time_in_serie == nTime })
-                .attr("class", "dot")
+                .attr("class", "dot1")
                 .attr("r", function(d) { return rad(1); })
                 .attr("cx", function(d) { return x(d.environment); })
                 .attr("cy", function(d) { return y(d.direction); })
@@ -206,7 +211,7 @@
 
 
 
-    <section>
+    <section id="plot2">
 
       <p class="time1">
         <label for="nTime1"
@@ -241,7 +246,7 @@
             .scale(y)
             .orient("left");
 
-        var svg = d3.select("section").append("svg")
+        var svg = d3.select("plot2").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
