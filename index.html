@@ -81,7 +81,11 @@
         var rad = d3.scale.linear()
             .range([0, 5]);
 
-        var color = d3.scale.category10();
+
+        var ws=d3.rgb("darkorange");
+        var ww=d3.rgb("royalblue")
+        //var color = d3.scale.category10();
+        var color = [ws, ww];
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -136,7 +140,7 @@
                 .attr("y1", function(d) { return y(-d.starty / scale); })
                 .attr("x2", function(d) { return x(d.endx / scale); })
                 .attr("y2", function(d) { return y(-d.endy / scale); })
-                .attr("stroke", function(d) { return color(d.group); })
+                .attr("stroke", function(d) { return color[d.group-2]; })
                 .attr("stroke-width", function(d) { return 2; });
         });
 
@@ -166,7 +170,7 @@
                   .attr("y1", function(d) { return y(-d.starty / scale); })
                   .attr("x2", function(d) { return x(d.endx / scale); })
                   .attr("y2", function(d) { return y(-d.endy / scale); })
-                  .attr("stroke", function(d) { return color(d.group); })
+                  .attr("stroke", function(d) { return color[d.group-2]; })
                   .attr("stroke-width", function(d) { return 2; });
           });
         }
