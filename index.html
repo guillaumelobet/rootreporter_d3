@@ -24,10 +24,17 @@
           stroke: #000;
           shape-rendering: crispEdges;
         }
+        .dot {
+          stroke: none;
+          fill: rgba(92, 158, 248, 0.8);
+        }    
         .seg {
-            opacity: 0.7
-        }
-
+          stroke: black;
+          opacity: 0.7;
+        }   
+        .seg1 {
+          opacity: 0.7;
+        }    
         .time{
           font-size: 1.5em;
         }
@@ -66,6 +73,8 @@
         <input type="range" min="1" max="10" id="nTime" value="1">
       </p>
 
+      <div id="plot1"></div>
+
       <script>
 
         var margin = {top: 60, right: 40, bottom: 20, left: 40},
@@ -81,11 +90,11 @@
         var rad = d3.scale.linear()
             .range([0, 5]);
 
-
         var ws=d3.rgb("darkorange");
-        var ww=d3.rgb("royalblue")
+        var ww=d3.rgb("royalblue");
+
         //var color = d3.scale.category10();
-        var color = [ws, ww];
+        var color1 = [ws, ww];
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -95,7 +104,7 @@
             .scale(y)
             .orient("left");
 
-        var svg = d3.select("section").append("svg")
+        var svg1 = d3.select("#plot1").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -105,9 +114,135 @@
 
         d3.csv("humidity.csv", function(error, data) {
 
-
             x.domain(d3.extent(data, function(d) { return d.startx / scale; })).nice();
             y.domain(d3.extent(data, function(d) { return -d.starty / scale; })).nice();
+
+            svg1.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+              .append("text")
+                .attr("class", "label")
+                .attr("x", width)
+                .attr("y", -6)
+                .style("text-anchor", "end")
+                .text("Width (cm)");
+
+            svg1.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+              .append("text")
+                .attr("class", "label")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text("Depth (cm)")
+
+            svg1.selectAll(".seg1")
+                .data(data)
+                .enter().append("line")
+                .filter(function(d) { return d.time_in_serie == 1 })
+                .attr("class", "seg1")
+                .attr("x1", function(d) { return x(d.startx / scale); })
+                .attr("y1", function(d) { return y(-d.starty / scale); })
+                .attr("x2", function(d) { return x(d.endx / scale); })
+                .attr("y2", function(d) { return y(-d.endy / scale); })
+                .attr("stroke", function(d) { return color1[d.group-2]; })
+                .attr("stroke-width", function(d) { return 2; });
+        });
+
+
+        d3.select("#nTime").on("input", function() {
+            update1(+this.value);
+
+        });
+
+
+        function update1(nTime) {
+
+
+          // adjust the text on the range slider
+          d3.select("#nTime-value").text(nTime);
+          d3.select("#nTime").property("value", nTime);
+
+          d3.csv("humidity.csv", function(error, data) {
+
+              svg1.selectAll(".seg1")
+                  .remove("line")
+
+              svg1.selectAll(".seg1")
+                  .data(data)
+                  .enter().append("line")
+                  .filter(function(d) { return d.time_in_serie == nTime })
+                  .attr("class", "seg1")
+                  .attr("x1", function(d) { return x(d.startx / scale); })
+                  .attr("y1", function(d) { return y(-d.starty / scale); })
+                  .attr("x2", function(d) { return x(d.endx / scale); })
+                  .attr("y2", function(d) { return y(-d.endy / scale); })
+                  .attr("stroke", function(d) { return color1[d.group-2]; })
+                  .attr("stroke-width", function(d) { return 3; });
+          });
+        }
+
+      </script>
+
+    </section>
+
+    <section>
+
+      <p>Time series showing the relationship between local soil moisture content and root growth direction. Orange lines: water deficit. Blue lines: Well Watered. Data coming from the figure 8 of the pre-print available in <a href="http://biorxiv.org/content/early/2015/03/30/016931">BioRxiv</a></p>
+      <hr>
+    </section>
+
+
+
+
+ <section>
+
+      <p class="time">
+        <label for="nTime1"
+              style="display: inline-block; width: 240px; text-align: right">
+              Time in serie: <span id="nTime-value-1">1</span>
+           </label>
+        <input id = "nTime1" type="range" min="1" max="5"  value="1">
+      </p>
+
+      <div id="plot2"></div>
+
+      <script>
+
+        var svg = d3.select("#plot2").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var scale = 138.6;
+
+        d3.csv("segs.csv", function(error, data) {
+
+            svg.selectAll(".seg")
+                .data(data)
+                .enter().append("line")
+                .filter(function(d) { return d.time_in_serie == 1 })
+                .attr("class", "seg")
+                .attr("x1", function(d) { return x(d.startx / scale); })
+                .attr("y1", function(d) { return y(-d.starty / scale); })
+                .attr("x2", function(d) { return x(d.endx / scale); })
+                .attr("y2", function(d) { return y(-d.endy / scale); });
+        });
+
+
+        d3.select("#nTime1").on("input", function() {
+            update(+this.value);
+        });
+
+
+        d3.csv("reporters.csv", function(error, data) {
+
+            x.domain(d3.extent(data, function(d) { return d.rep_x / scale; })).nice();
+            y.domain(d3.extent(data, function(d) { return -d.rep_y / scale; })).nice();
 
             svg.append("g")
                 .attr("class", "x axis")
@@ -131,63 +266,91 @@
                 .style("text-anchor", "end")
                 .text("Depth (cm)")
 
-            svg.selectAll(".seg")
+            svg.selectAll("circle")
                 .data(data)
-                .enter().append("line")
+                .enter().append("svg:circle")
                 .filter(function(d) { return d.time_in_serie == 1 })
-                .attr("class", "seg")
-                .attr("x1", function(d) { return x(d.startx / scale); })
-                .attr("y1", function(d) { return y(-d.starty / scale); })
-                .attr("x2", function(d) { return x(d.endx / scale); })
-                .attr("y2", function(d) { return y(-d.endy / scale); })
-                .attr("stroke", function(d) { return color[d.group-1]; })
-                .attr("stroke-width", function(d) { return 2; });
+                .attr("class", "dot")
+                .attr("r", function(d) { return rad(d.intensity / 10); })
+                .attr("cx", function(d) { return x(d.rep_x / scale); })
+                .attr("cy", function(d) { return y(-d.rep_y / scale); });
+            $('circle').tipsy({ 
+                  gravity: 'w', 
+                  html: true, 
+                  title: function() {
+                    var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = (Math.round((d.diameter/scale)*100))/100, c4 = (Math.round((d.growth/scale)*100))/100;
+                    return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h'; 
+                  }
+                });  
+
         });
-
-
-        d3.select("#nTime").on("input", function() {
-            update(+this.value);
-        });
-
 
         function update(nTime) {
 
           // adjust the text on the range slider
-          d3.select("#nTime-value").text(nTime);
+          d3.select("#nTime-value-1").text(nTime);
           d3.select("#nTime").property("value", nTime);
 
-          d3.csv("humidity.csv", function(error, data) {
+          d3.csv("reporters.csv", function(error, data) {
 
-              svg.selectAll(".seg")
-                  .remove("line")
+            x.domain(d3.extent(data, function(d) { return d.rep_x / scale; })).nice();
+            y.domain(d3.extent(data, function(d) { return -d.rep_y / scale; })).nice();
 
-              svg.selectAll(".seg")
-                  .data(data)
-                  .enter().append("line")
-                  .filter(function(d) { return d.time_in_serie == nTime })
-                  .attr("class", "seg")
-                  .attr("x1", function(d) { return x(d.startx / scale); })
-                  .attr("y1", function(d) { return y(-d.starty / scale); })
-                  .attr("x2", function(d) { return x(d.endx / scale); })
-                  .attr("y2", function(d) { return y(-d.endy / scale); })
-                  .attr("stroke", function(d) { return color[d.group-1]; })
-                  .attr("stroke-width", function(d) { return 2; });
-          });
+            svg.selectAll("circle")
+                .remove("circle")
+
+            svg.selectAll("circle")
+                .data(data)
+                .enter().append("svg:circle")
+                .filter(function(d) { return d.time_in_serie == nTime})
+                .attr("class", "dot")
+                .attr("r", function(d) { return rad(d.intensity / 10); })
+                .attr("cx", function(d) { return x(d.rep_x / scale); })
+                .attr("cy", function(d) { return y(-d.rep_y / scale); });
+
+                $('circle').tipsy({ 
+                      gravity: 'w', 
+                      html: true, 
+                      title: function() {
+                        var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = (Math.round((d.diameter/scale)*100))/100, c4 = (Math.round((d.growth/scale)*100))/100;
+                        return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h'; 
+                      }
+                    });  
+              });
+
+          d3.csv("segs.csv", function(error, data) {
+
+                  svg.selectAll(".seg")
+                      .remove("line")
+
+                  svg.selectAll(".seg")
+                      .data(data)
+                      .enter().append("line")
+                      .filter(function(d) { return d.time_in_serie == nTime })
+                      .attr("class", "seg")
+                      .attr("x1", function(d) { return x(d.startx / scale); })
+                      .attr("y1", function(d) { return y(-d.starty / scale); })
+                      .attr("x2", function(d) { return x(d.endx / scale); })
+                      .attr("y2", function(d) { return y(-d.endy / scale); });
+              });
         }
 
       </script>
 
     </section>
-
     <section>
 
-      <p>Time series showing the relationship between local soil moisture content and root growth direction. Orange lines: water deficit. Blue lines: Well Watered. Data coming from the figure 8 of the pre-print available in <a href="http://biorxiv.org/content/early/2015/03/30/016931">BioRxiv</a></p>
-      <hr>
+      <p>Time series showing root growth and ProZAT12:LUC expression after salt addition to the right side of the root system. Data coming from the figure 7 of the pre-print available in <a href="http://biorxiv.org/content/early/2015/03/30/016931">BioRxiv</a></p>
+      
+
+      <hr>      
       <h2>
       <a id="multidimensional-mapping-of-root-responses-to-environmental-cues-using-a-luminescence-based-imaging-system" class="anchor" href="#multidimensional-mapping-of-root-responses-to-environmental-cues-using-a-luminescence-based-imaging-system" aria-hidden="true"><span class="octicon octicon-link"></span></a>Multidimensional mapping of root responses to environmental cues using a luminescence-based imaging system</h2>
 
       <p>Rubén Rellán-Álvarez<sup>1, 9</sup>, Guillaume Lobet<sup>2</sup>, Heike Lindner<sup>1, 8</sup>, Pierre-Luc Pradier<sup>1, 8, 10</sup>, Muh-Ching Yee<sup>1</sup>, Jose Sebastian<sup>1</sup>, Yu Geng<sup>1, 7</sup>, Charlotte Trontin<sup>1</sup>, Therese LaRue<sup>3</sup>, Amanda Schrager<sup>4</sup>, Cara Haney<sup>5</sup>, Rita Nieu<sup>6</sup>, Julin Maloof<sup>4</sup>, John P. Vogel<sup>7</sup>, José R. Dinneny<sup>1,12 </sup></p>
     </section>
+
+
 
   </div>
 
