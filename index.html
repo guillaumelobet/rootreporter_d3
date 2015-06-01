@@ -140,7 +140,7 @@
                 .attr("y1", function(d) { return y(-d.starty / scale); })
                 .attr("x2", function(d) { return x(d.endx / scale); })
                 .attr("y2", function(d) { return y(-d.endy / scale); })
-                .attr("stroke", function(d) { return color[d.group-2]; })
+                .attr("stroke", function(d) { return color[d.group-1]; })
                 .attr("stroke-width", function(d) { return 2; });
         });
 
@@ -170,7 +170,7 @@
                   .attr("y1", function(d) { return y(-d.starty / scale); })
                   .attr("x2", function(d) { return x(d.endx / scale); })
                   .attr("y2", function(d) { return y(-d.endy / scale); })
-                  .attr("stroke", function(d) { return color[d.group-2]; })
+                  .attr("stroke", function(d) { return color[d.group-1]; })
                   .attr("stroke-width", function(d) { return 2; });
           });
         }
