@@ -11,8 +11,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
       <script src="http://d3js.org/d3.v3.min.js"></script>
       <!--script type="text/javascript" src="d3.v3.min.js"></script-->
-      <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script> 
-      <!--script type="text/javascript" src="jquery-1.6.2.min.js"></script--> 
+      <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+      <!--script type="text/javascript" src="jquery-1.6.2.min.js"></script-->
       <script type="text/javascript" src="jquery.tipsy.js"></script>
       <link href="tipsy.css" rel="stylesheet" type="text/css" />
 
@@ -27,14 +27,14 @@
         .dot {
           stroke: none;
           fill: rgba(92, 158, 248, 0.8);
-        }    
+        }
         .seg {
           stroke: black;
           opacity: 0.7;
-        }   
+        }
         .seg1 {
           opacity: 0.7;
-        }    
+        }
         .time{
           font-size: 1.5em;
         }
@@ -200,13 +200,6 @@
 
  <section>
 
-      <p class="time">
-        <label for="nTime1"
-              style="display: inline-block; width: 240px; text-align: right">
-              Time in serie: <span id="nTime-value-1">1</span>
-           </label>
-        <input id = "nTime1" type="range" min="1" max="5"  value="1">
-      </p>
 
       <div id="plot2"></div>
 
@@ -274,14 +267,14 @@
                 .attr("r", function(d) { return rad(d.intensity / 10); })
                 .attr("cx", function(d) { return x(d.rep_x / scale); })
                 .attr("cy", function(d) { return y(-d.rep_y / scale); });
-            $('circle').tipsy({ 
-                  gravity: 'w', 
-                  html: true, 
+            $('circle').tipsy({
+                  gravity: 'w',
+                  html: true,
                   title: function() {
                     var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = (Math.round((d.diameter/scale)*100))/100, c4 = (Math.round((d.growth/scale)*100))/100;
-                    return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h'; 
+                    return '<b>Feret length:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h'; 
                   }
-                });  
+                });
 
         });
 
@@ -308,14 +301,14 @@
                 .attr("cx", function(d) { return x(d.rep_x / scale); })
                 .attr("cy", function(d) { return y(-d.rep_y / scale); });
 
-                $('circle').tipsy({ 
-                      gravity: 'w', 
-                      html: true, 
+                $('circle').tipsy({
+                      gravity: 'w',
+                      html: true,
                       title: function() {
                         var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = (Math.round((d.diameter/scale)*100))/100, c4 = (Math.round((d.growth/scale)*100))/100;
-                        return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h'; 
+                        return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h';
                       }
-                    });  
+                    });
               });
 
           d3.csv("segs.csv", function(error, data) {
@@ -341,9 +334,9 @@
     <section>
 
       <p>Time series showing root growth and ProZAT12:LUC expression after salt addition to the right side of the root system. Data coming from the figure 7 of the pre-print available in <a href="http://biorxiv.org/content/early/2015/03/30/016931">BioRxiv</a></p>
-      
 
-      <hr>      
+
+      <hr>
       <h2>
       <a id="multidimensional-mapping-of-root-responses-to-environmental-cues-using-a-luminescence-based-imaging-system" class="anchor" href="#multidimensional-mapping-of-root-responses-to-environmental-cues-using-a-luminescence-based-imaging-system" aria-hidden="true"><span class="octicon octicon-link"></span></a>Multidimensional mapping of root responses to environmental cues using a luminescence-based imaging system</h2>
 
