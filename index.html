@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-      <script src="http://d3js.org/d3.v3.min.js"></script>
-      <!--script type="text/javascript" src="d3.v3.min.js"></script-->
-      <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
-      <!--script type="text/javascript" src="jquery-1.6.2.min.js"></script-->
+      <!--script src="http://d3js.org/d3.v3.min.js"></script-->
+      <script type="text/javascript" src="d3.v3.min.js"></script>
+      <!--script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script--> 
+      <script type="text/javascript" src="jquery-1.6.2.min.js"></script--> 
       <script type="text/javascript" src="jquery.tipsy.js"></script>
       <link href="tipsy.css" rel="stylesheet" type="text/css" />
 
@@ -26,19 +26,18 @@
         }
         .dot {
           stroke: none;
-          fill: rgba(92, 158, 248, 0.8);
-        }
+          opacity: 0.5;
+        }    
         .seg {
           stroke: black;
-          opacity: 0.7;
-        }
+          opacity: 0.9;
+        }   
         .seg1 {
-          opacity: 0.7;
-        }
+          opacity: 0.9;
+        }    
         .time{
           font-size: 1.5em;
         }
-
       </style>
 
     </meta>
@@ -81,20 +80,15 @@
             width = 500 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
-        var x = d3.scale.linear()
-            .range([0, width]);
+        var x = d3.scale.linear().range([0, width]);
 
-        var y = d3.scale.linear()
-            .range([height, 0]);
+        var y = d3.scale.linear().range([height, 0]);
 
-        var rad = d3.scale.linear()
-            .range([0, 5]);
+        var rad = d3.scale.linear().range([0, 5]);
 
-        var ws=d3.rgb("darkorange");
-        var ww=d3.rgb("royalblue");
-
-        //var color = d3.scale.category10();
-        var color1 = [ws, ww];
+        var color = d3.scale.linear().domain([0, 100]).range(["red","blue"]);
+       
+        var color1 = [d3.rgb("darkorange"), d3.rgb("royalblue")];
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -103,14 +97,32 @@
         var yAxis = d3.svg.axis()
             .scale(y)
             .orient("left");
-
+    
         var svg1 = d3.select("#plot1").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+        
         var scale = 138.6;
+
+
+        function lineAnimate(selection) {
+            selection
+              .attr("x1", function(d) { return x(d.startx / scale); })
+              .attr("y1", function(d) { return y(-d.starty / scale); })
+              .attr("x2", function(d) { return x(d.startx / scale); })
+              .attr("y2", function(d) { return y(-d.starty / scale); })
+              .style('opacity', 0.5)
+              .transition()
+                  .ease('linear')
+                  .duration(3000)
+                  .delay(function(d) {return d.time_in_serie*10;})
+                  .attr("x2", function(d) { return x(d.endx / scale); })
+                  .attr("y2", function(d){ return y(-d.endy / scale); })
+              .each('end', function() {d3.select(this).call(lineAnimate)});
+        }
+
 
         d3.csv("humidity.csv", function(error, data) {
 
@@ -131,7 +143,7 @@
             svg1.append("g")
                 .attr("class", "y axis")
                 .call(yAxis)
-              .append("text")
+                .append("text")
                 .attr("class", "label")
                 .attr("transform", "rotate(-90)")
                 .attr("y", 6)
@@ -139,25 +151,43 @@
                 .style("text-anchor", "end")
                 .text("Depth (cm)")
 
-            svg1.selectAll(".seg1")
+
+              svg1.selectAll(".seg1")
                 .data(data)
-                .enter().append("line")
-                .filter(function(d) { return d.time_in_serie == 1 })
+                .enter()
+                .append('line')
+                //.filter(function(d) { return d.time_in_serie < nTime})
                 .attr("class", "seg1")
-                .attr("x1", function(d) { return x(d.startx / scale); })
-                .attr("y1", function(d) { return y(-d.starty / scale); })
-                .attr("x2", function(d) { return x(d.endx / scale); })
-                .attr("y2", function(d) { return y(-d.endy / scale); })
-                .attr("stroke", function(d) { return color1[d.group-1]; })
-                .attr("stroke-width", function(d) { return 2; });
+                .attr("stroke", function(d) { return color1[d.group-2]; })
+                .attr("stroke-width", 3)
+                .call(lineAnimate);
+
+            /*svg1.selectAll('.seg1')
+              .data(data)
+              .enter()
+              .append('line')
+              .filter(function(d) { return d.time_in_serie == 10})
+              .attr("class", "seg1")
+              .attr("stroke", function(d) { return color1[d.group-2]; })
+              .attr("stroke-width", 3)
+              .attr("x1", function(d) { return x(d.startx / scale); })
+              .attr("y1", function(d) { return y(-d.starty / scale); })
+              .attr("x2", function(d) { return x(d.startx / scale); })
+              .attr("y2", function(d) { return y(-d.starty / scale); })
+              .style('opacity', 0.5)
+              .transition()
+                  .ease('linear')
+                  .duration(2000)
+                  .delay(function(d) {return d.time_in_serie*10;})
+                  .attr("x2", function(d) { return x(d.endx / scale); })
+                  .attr("y2", function(d){ return y(-d.endy / scale); });*/
+
         });
 
 
         d3.select("#nTime").on("input", function() {
             update1(+this.value);
-
         });
-
 
         function update1(nTime) {
 
@@ -169,19 +199,34 @@
           d3.csv("humidity.csv", function(error, data) {
 
               svg1.selectAll(".seg1")
-                  .remove("line")
+                  .remove("line");
 
+            svg.selectAll("circle")
+                .remove("circle");
+
+              /*
+              svg1.selectAll("circle")
+                .data(data)
+                .enter().append("svg:circle")
+                .filter(function(d) { return d.time_in_serie == nTime })
+                .attr("class", "dot")
+                .attr("r", function(d) { return 10; })
+                .attr("cx", function(d) { return x(d.startx / scale); })
+                .attr("cy", function(d) { return y(-d.starty / scale); })
+                .attr("fill", function(d){return color(d.time_in_serie)}); 
+              */
               svg1.selectAll(".seg1")
-                  .data(data)
-                  .enter().append("line")
-                  .filter(function(d) { return d.time_in_serie == nTime })
-                  .attr("class", "seg1")
-                  .attr("x1", function(d) { return x(d.startx / scale); })
-                  .attr("y1", function(d) { return y(-d.starty / scale); })
-                  .attr("x2", function(d) { return x(d.endx / scale); })
-                  .attr("y2", function(d) { return y(-d.endy / scale); })
-                  .attr("stroke", function(d) { return color1[d.group-1]; })
-                  .attr("stroke-width", function(d) { return 2; });
+                .data(data)
+                .enter()
+                .append('line')
+                .filter(function(d) { return d.time_in_serie < nTime})
+                .attr("class", "seg1")
+                .attr("stroke", function(d) { return color1[d.group-2]; })
+                .attr("stroke-width", 3)
+                .call(lineAnimate);
+
+
+              
           });
         }
 
@@ -267,66 +312,17 @@
                 .attr("r", function(d) { return rad(d.intensity / 10); })
                 .attr("cx", function(d) { return x(d.rep_x / scale); })
                 .attr("cy", function(d) { return y(-d.rep_y / scale); });
-            $('circle').tipsy({
-                  gravity: 'w',
-                  html: true,
+
+            $('circle').tipsy({ 
+                  gravity: 'w', 
+                  html: true, 
                   title: function() {
                     var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = (Math.round((d.diameter/scale)*100))/100, c4 = (Math.round((d.growth/scale)*100))/100;
-                    return '<b>Feret length:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h'; 
+                    return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h'; 
                   }
-                });
+                });  
 
         });
-
-        function update(nTime) {
-
-          // adjust the text on the range slider
-          d3.select("#nTime-value-1").text(nTime);
-          d3.select("#nTime").property("value", nTime);
-
-          d3.csv("reporters.csv", function(error, data) {
-
-            x.domain(d3.extent(data, function(d) { return d.rep_x / scale; })).nice();
-            y.domain(d3.extent(data, function(d) { return -d.rep_y / scale; })).nice();
-
-            svg.selectAll("circle")
-                .remove("circle")
-
-            svg.selectAll("circle")
-                .data(data)
-                .enter().append("svg:circle")
-                .filter(function(d) { return d.time_in_serie == nTime})
-                .attr("class", "dot")
-                .attr("r", function(d) { return rad(d.intensity / 10); })
-                .attr("cx", function(d) { return x(d.rep_x / scale); })
-                .attr("cy", function(d) { return y(-d.rep_y / scale); });
-
-                $('circle').tipsy({
-                      gravity: 'w',
-                      html: true,
-                      title: function() {
-                        var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = (Math.round((d.diameter/scale)*100))/100, c4 = (Math.round((d.growth/scale)*100))/100;
-                        return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h';
-                      }
-                    });
-              });
-
-          d3.csv("segs.csv", function(error, data) {
-
-                  svg.selectAll(".seg")
-                      .remove("line")
-
-                  svg.selectAll(".seg")
-                      .data(data)
-                      .enter().append("line")
-                      .filter(function(d) { return d.time_in_serie == nTime })
-                      .attr("class", "seg")
-                      .attr("x1", function(d) { return x(d.startx / scale); })
-                      .attr("y1", function(d) { return y(-d.starty / scale); })
-                      .attr("x2", function(d) { return x(d.endx / scale); })
-                      .attr("y2", function(d) { return y(-d.endy / scale); });
-              });
-        }
 
       </script>
 
@@ -334,9 +330,9 @@
     <section>
 
       <p>Time series showing root growth and ProZAT12:LUC expression after salt addition to the right side of the root system. Data coming from the figure 7 of the pre-print available in <a href="http://biorxiv.org/content/early/2015/03/30/016931">BioRxiv</a></p>
+      
 
-
-      <hr>
+      <hr>      
       <h2>
       <a id="multidimensional-mapping-of-root-responses-to-environmental-cues-using-a-luminescence-based-imaging-system" class="anchor" href="#multidimensional-mapping-of-root-responses-to-environmental-cues-using-a-luminescence-based-imaging-system" aria-hidden="true"><span class="octicon octicon-link"></span></a>Multidimensional mapping of root responses to environmental cues using a luminescence-based imaging system</h2>
 
@@ -348,7 +344,7 @@
   </div>
 
   <footer>
-    <p>This project is maintained by <a href="https://www.guillaumelobet.be">Guillaume Lobet</a> and <a href="https://github.com/rr-lab">rr-lab</a></p>
+    <p>This project is maintained by <a href="https://github.com/rr-lab">rr-lab</a></p>
     <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
   </footer>
 
