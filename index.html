@@ -26,7 +26,7 @@
         }
         .dot {
           stroke: none;
-          opacity: 0.5;
+          fill: rgba(92, 158, 248, 0.8);
         }    
         .seg {
           stroke: black;
@@ -158,7 +158,7 @@
                 .append('line')
                 //.filter(function(d) { return d.time_in_serie < nTime})
                 .attr("class", "seg1")
-                .attr("stroke", function(d) { return color1[d.group-2]; })
+                .attr("stroke", function(d) { return color1[d.group-1]; })
                 .attr("stroke-width", 3)
                 .call(lineAnimate);
 
@@ -221,7 +221,7 @@
                 .append('line')
                 .filter(function(d) { return d.time_in_serie < nTime})
                 .attr("class", "seg1")
-                .attr("stroke", function(d) { return color1[d.group-2]; })
+                .attr("stroke", function(d) { return color1[d.group-1]; })
                 .attr("stroke-width", 3)
                 .call(lineAnimate);
 
@@ -318,7 +318,7 @@
                   html: true, 
                   title: function() {
                     var d = this.__data__, c1 = d.intensity, c2 = d.intensity_ratio, c3 = (Math.round((d.diameter/scale)*100))/100, c4 = (Math.round((d.growth/scale)*100))/100;
-                    return '<b>Intensity:</b> ' + c1 + '</br><b>Intensity ratio:</b> ' + c2 + '</br><b>Diameter:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h'; 
+                    return </br><b>Diameter:</b> ' + c3 + ' cm</br><b>Growth:</b> ' + c4 + ' cm/h'; 
                   }
                 });  
 
