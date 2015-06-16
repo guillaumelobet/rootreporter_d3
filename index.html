@@ -72,6 +72,13 @@
                       .scale(y)
                       .orient("left");
     
+        var yAxisInv = d3.svg.axis()
+                      .scale(y)
+                      .orient("left")
+                      .tickFormat(function(d) {
+                        return -18+d;
+                      });   
+    
         var svg1 = d3.select("#plot1").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -168,7 +175,7 @@
 
             svg1.append("g")
                 .attr("class", "y axis")
-                .call(yAxis)
+                .call(yAxisInv)
                 .append("text")
                 .attr("class", "label")
                 .attr("transform", "rotate(-90)")
@@ -232,7 +239,7 @@
 
             svg1b.append("g")
                 .attr("class", "y axis")
-                .call(yAxis)
+                .call(yAxisInv)
                 .append("text")
                 .attr("class", "label")
                 .attr("transform", "rotate(-90)")
